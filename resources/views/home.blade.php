@@ -6,7 +6,7 @@
     <title>Dashboard Penjualan</title>
     <link rel="stylesheet" href="{{ asset('/css/styles.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
-
+</head>
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>Dashboard Penjualan</h2>
@@ -56,11 +56,21 @@
 
 
         <!-- Sales Chart -->
-        <div id="chart">
+        {{-- <div id="chart">
             <h2>Grafik Penjualan Bulanan</h2>
             <canvas id="salesChart"></canvas>
         </div>
-    </div>
+    </div> --}}
     <!--<script src="script.js"></script>-->
+
+    <!-- Sales Chart -->
+<div id="chart">
+    <h2>Grafik Penjualan Bulanan</h2>
+    {!! $chart->container() !!}
+</div>
+
+<!-- Ini script untuk memanggil larapex (wajib) -->
+<script src="{{ $chart->cdn() }}"></script>
+{{ $chart->script() }}
 </body>
 </html>

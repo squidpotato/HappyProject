@@ -15,7 +15,14 @@ class ProdukController extends Controller
 
     public function ViewProduk()
     {
-        $produk = Produk::all(); //mengambil semua data di tabel produk
+        // $produk = Produk::all(); //mengambil semua data di tabel produk
+        // Mengecek apakah user yang terotentikasi memiliki role 'admin'
+        $isAdmin = Auth::user()->role == 'admin';
+
+        // Jika user adalah admin, maka ambil semua data produk
+        // Jika bukan admin, maka ambil data produk dengan user_id yang sesuai dengan user yang sedang login
+        $produk = $isAdmin ? Produk::all() : Produk::where('user_id', Auth::user()->id)->get();
+
         return view('produk', ['produk' => $produk]); //menampilkan view dari produk.blade.php dengan membawa variabel $produk
     }
 
@@ -33,11 +40,12 @@ class ProdukController extends Controller
             'deskripsi' => $request->deskripsi,
             'harga' => $request->harga,
             'jumlah_produk' => $request->jumlah_produk,
-            'image' => $imageName
+            'image' => $imageName,
+            'user_id' => Auth::user()->id
 
         ]);
-
-        return redirect('/produk');
+        // return redirect('/produk');
+        return redirect(Auth::user()->role.'/produk');
     }
 
     public function ViewAddProduk()
@@ -50,7 +58,8 @@ class ProdukController extends Controller
         Produk::where('kode_produk', $kode_produk) ->delete(); //Find the record by ID
 
         //Redirect back to the index page with a success massage
-        return Redirect('/produk');
+        // return Redirect('/produk');
+        return Redirect(Auth::user()->role.'/produk');
     }
     // Fungsi untuk View Edit Produk
     public function ViewEditProduk ($kode_produk)
@@ -75,6 +84,25 @@ class ProdukController extends Controller
             'harga' => $request->harga,
             'jumlah_produk' => $request->jumlah_produk
         ]);
-        return redirect('/produk');
+        // return redirect('/produk');
+        return redirect(Auth::user()->role.'/produk');
+        }
+    }
+    public function ViewLaporan ()
+    {
+        // Mengambil semua data produk
+        $produks = Produk::all();
+        return view('laporan', ['products' => $products]);
+    }
+    public function print()
+    {
+        //mengambil semua data produk
+        $products = Produk::all();
+
+        //Load view untuk PDF untuk data produk
+        $pdf = Pdf::loadView('report', compact('products'));
+
+        //Menampilkan PDF langsung di browser
+        return $pdf->stream('laporan-produk.pdf');
     }
 }
